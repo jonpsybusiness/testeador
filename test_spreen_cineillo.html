@@ -28,83 +28,32 @@
       border-bottom: 1px solid #2a2a2e;
       flex-shrink: 0;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 6px;
     }
-    .stream-topbar-left { display: flex; align-items: center; gap: 10px; flex-grow: 1; }
+    .stream-topbar-left { display: flex; align-items: center; gap: 10px; }
     .live-badge {
-      background: #e60054; color: #ffffff; font-size: 11px;
+      background: #ff5722; color: #ffffff; font-size: 11px;
       font-weight: 700; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.5px;
     }
-    
-    .url-changer-container {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: #1f1f23;
-      border: 1px solid #2a2a2e;
-      border-radius: 6px;
-      padding: 3px 6px;
-      max-width: 450px;
-      width: 100%;
-    }
-    .url-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: #efeff1;
-      font-size: 12px;
-      padding: 4px;
-      outline: none;
-    }
-    .url-input::placeholder { color: #5a5a66; }
-    .url-btn {
-      background: #e60054;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      padding: 4px 10px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .url-btn:hover { background: #ff1a6c; }
-
-    .stream-topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .stream-title { color: #efeff1; font-size: 14px; font-weight: 600; }
+    .stream-channel-name { color: #ff5722; font-size: 13px; font-weight: 600; }
+    .stream-topbar-right { display: flex; align-items: center; gap: 8px; }
     .platform-tag {
       display: inline-flex; align-items: center; gap: 5px;
       background: #1f1f23; border: 1px solid #2a2a2e;
       border-radius: 4px; padding: 4px 8px; font-size: 11px; font-weight: 600;
     }
-    .patreon-tag { color: #e60054; border-color: #e60054; }
+    .okru-tag { color: #ff5722; border-color: #ff5722; }
     .twitch-tag { color: #9147ff; border-color: #9147ff; }
-    
     .stream-main { display: flex; flex: 1; min-height: 0; }
     .stream-panel { flex: 1; position: relative; background: #000; }
     .stream-panel iframe { width: 100%; height: 100%; border: none; display: block; }
-    
-    /* Contenedor alternativo si la plataforma no permite iframe */
-    .fallback-container {
-      display: none;
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: #141416;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      text-align: center;
-      z-index: 5;
+    .okru-watermark {
+      position: absolute; bottom: 10px; left: 12px;
+      background: rgba(0,0,0,0.65); border-radius: 4px; padding: 4px 8px;
+      font-size: 11px; color: #ff5722; font-weight: 700;
+      pointer-events: none; z-index: 10;
     }
-    .fallback-title { color: #efeff1; font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-    .fallback-text { color: #adadb8; font-size: 13px; max-width: 300px; margin-bottom: 20px; }
-    .fallback-btn {
-      background: #e60054; color: white; text-decoration: none;
-      padding: 12px 24px; border-radius: 6px; font-size: 14px; font-weight: 600;
-      transition: background 0.2s; display: inline-block;
-    }
-    .fallback-btn:hover { background: #ff1a6c; }
-
     .stream-divider { width: 2px; background: #2a2a2e; flex-shrink: 0; }
     .chat-panel {
       width: 360px; flex-shrink: 0;
@@ -135,18 +84,15 @@
     .footer-links { display: flex; gap: 12px; }
     .footer-link { color: #adadb8; font-size: 12px; text-decoration: none; transition: color 0.2s; }
     .footer-link:hover { color: #efeff1; }
-    .footer-link.patreon:hover { color: #e60054; }
+    .footer-link.okru:hover { color: #ff5722; }
     .footer-link.twitch:hover { color: #9147ff; }
     .footer-info { color: #5a5a66; font-size: 11px; }
-    
     @media (max-width: 768px) {
       html, body { overflow: auto; }
       .stream-page-wrapper { height: auto; min-height: 100vh; }
       .stream-main { flex-direction: column; }
       .stream-panel { height: 56.25vw; min-height: 200px; }
       .chat-panel { width: 100%; height: 50vh; }
-      .stream-topbar { flex-direction: column; align-items: stretch; gap: 10px; }
-      .url-changer-container { max-width: 100%; }
     }
   </style>
 </head>
@@ -155,22 +101,12 @@
 
   <div class="stream-topbar">
     <div class="stream-topbar-left">
-      <span class="live-badge">● STREAM</span>
-      
-      <div class="url-changer-container">
-        <input 
-          type="text" 
-          id="streamUrlInput" 
-          class="url-input" 
-          placeholder="Pega la URL del reproductor (Vimeo, OK.ru, etc)..."
-          value=""
-        >
-        <button class="url-btn" onclick="updateStreamPlayer()">Cargar</button>
-      </div>
+      <span class="live-badge">● CINE</span>
+      <span class="stream-channel-name">spreen × cineillojuan</span>
+      <span class="stream-title">🎬 Reproductor de Video</span>
     </div>
-    
     <div class="stream-topbar-right">
-      <span class="platform-tag patreon-tag">▶ Panel</span>
+      <span class="platform-tag okru-tag">▶ OK.ru</span>
       <span class="platform-tag twitch-tag">💬 Twitch Chat</span>
     </div>
   </div>
@@ -179,18 +115,12 @@
 
     <div class="stream-panel">
       <iframe
-        id="mainStreamPlayer"
-        src="about:blank"
+        src="https://ok.ru/videoembed/1192048467658?autoplay=false"
         allowfullscreen="true"
-        allow="autoplay; fullscreen; encrypted-media"
-        title="Reproductor de directo"
+        scrolling="no"
+        title="Video en OK.ru"
       ></iframe>
-
-      <div id="fallbackView" class="fallback-container">
-        <div class="fallback-title">Enlace de Patreon Detectado</div>
-        <div class="fallback-text">Patreon no permite mostrar su web aquí dentro. Usa el botón de abajo para ver el vídeo mientras mantienes el chat abierto.</div>
-        <a href="#" id="fallbackExternalBtn" target="_blank" rel="noopener" class="fallback-btn">Ver vídeo en Patreon</a>
-      </div>
+      <div class="okru-watermark">🦊 ok.ru/video/1192048467658</div>
     </div>
 
     <div class="stream-divider"></div>
@@ -213,58 +143,12 @@
 
   <div class="stream-footer">
     <div class="footer-links">
-      <a href="#" id="footerDirectLink" target="_blank" rel="noopener" class="footer-link patreon">❤️ Enlace Externo</a>
+      <a href="https://ok.ru/video/1192048467658" target="_blank" rel="noopener" class="footer-link okru">🦊 Ver en OK.ru</a>
       <a href="https://www.twitch.tv/cineillojuan" target="_blank" rel="noopener" class="footer-link twitch">💜 Ver en Twitch</a>
     </div>
-    <span class="footer-info">Panel inteligente anti-bloqueos</span>
+    <span class="footer-info">spreen × cineillojuan · Video + Chat</span>
   </div>
 
 </div>
-
-<script>
-  function updateStreamPlayer() {
-    const inputVal = document.getElementById('streamUrlInput').value.trim();
-    const player = document.getElementById('mainStreamPlayer');
-    const fallback = document.getElementById('fallbackView');
-    const fallbackBtn = document.getElementById('fallbackExternalBtn');
-    const footerLink = document.getElementById('footerDirectLink');
-    
-    if (inputVal !== "") {
-      footerLink.href = inputVal;
-      
-      // CONTROL ANTI-BLOQUEO DE PATREON
-      if (inputVal.includes("patreon.com")) {
-        // Ocultamos el iframe roto y activamos la vista limpia con botón externo
-        player.style.display = "none";
-        fallback.style.display = "flex";
-        fallbackBtn.href = inputVal;
-        
-        // Abre el directo automáticamente en otra pestaña para agilizar en móviles
-        window.open(inputVal, '_blank');
-      } else {
-        // Si es un enlace de reproducción directa (Vimeo, Youtube, OK.ru, Kick...), carga perfecto
-        fallback.style.display = "none";
-        player.style.display = "block";
-        
-        let finalUrl = inputVal;
-        // Corrección rápida automática si pegas un enlace normal de OK.ru en vez de embed
-        if (finalUrl.includes("ok.ru/video/") && !finalUrl.includes("videoembed")) {
-          finalUrl = finalUrl.replace("ok.ru/video/", "ok.ru/videoembed/");
-        }
-        
-        player.src = finalUrl;
-      }
-    }
-  }
-
-  document.getElementById('streamUrlInput').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-      updateStreamPlayer();
-    }
-  });
-  
-  // Mostrar mensaje inicial limpio en el reproductor de vídeo
-  document.getElementById('mainStreamPlayer').src = "about:blank";
-</script>
 </body>
 </html>
