@@ -1,154 +1,85 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>spreen × cineillojuan – En Directo</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      width: 100%; height: 100%;
-      background: #0e0e10;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      overflow: hidden;
-    }
-    .stream-page-wrapper {
-      display: flex;
-      flex-direction: column;
-      width: 100vw;
-      height: 100vh;
-      background: #0e0e10;
-    }
-    .stream-topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #18181b;
-      padding: 10px 16px;
-      border-bottom: 1px solid #2a2a2e;
-      flex-shrink: 0;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    .stream-topbar-left { display: flex; align-items: center; gap: 10px; }
-    .live-badge {
-      background: #ff5722; color: #ffffff; font-size: 11px;
-      font-weight: 700; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.5px;
-    }
-    .stream-title { color: #efeff1; font-size: 14px; font-weight: 600; }
-    .stream-channel-name { color: #ff5722; font-size: 13px; font-weight: 600; }
-    .stream-topbar-right { display: flex; align-items: center; gap: 8px; }
-    .platform-tag {
-      display: inline-flex; align-items: center; gap: 5px;
-      background: #1f1f23; border: 1px solid #2a2a2e;
-      border-radius: 4px; padding: 4px 8px; font-size: 11px; font-weight: 600;
-    }
-    .okru-tag { color: #ff5722; border-color: #ff5722; }
-    .twitch-tag { color: #9147ff; border-color: #9147ff; }
-    .stream-main { display: flex; flex: 1; min-height: 0; }
-    .stream-panel { flex: 1; position: relative; background: #000; }
-    .stream-panel iframe { width: 100%; height: 100%; border: none; display: block; }
-    .okru-watermark {
-      position: absolute; bottom: 10px; left: 12px;
-      background: rgba(0,0,0,0.65); border-radius: 4px; padding: 4px 8px;
-      font-size: 11px; color: #ff5722; font-weight: 700;
-      pointer-events: none; z-index: 10;
-    }
-    .stream-divider { width: 2px; background: #2a2a2e; flex-shrink: 0; }
-    .chat-panel {
-      width: 360px; flex-shrink: 0;
-      display: flex; flex-direction: column; background: #18181b;
-    }
-    .chat-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 14px; border-bottom: 1px solid #2a2a2e;
-      background: #1f1f23; flex-shrink: 0;
-    }
-    .chat-header-title {
-      display: flex; align-items: center; gap: 7px;
-      color: #efeff1; font-size: 13px; font-weight: 600;
-    }
-    .twitch-dot {
-      width: 8px; height: 8px; background: #9147ff;
-      border-radius: 50%; animation: pulse-twitch 2s infinite;
-    }
-    @keyframes pulse-twitch {
-      0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
-    }
-    .chat-panel iframe { flex: 1; width: 100%; border: none; display: block; }
-    .stream-footer {
-      background: #18181b; border-top: 1px solid #2a2a2e;
-      padding: 8px 16px; display: flex;
-      align-items: center; justify-content: space-between; flex-shrink: 0;
-    }
-    .footer-links { display: flex; gap: 12px; }
-    .footer-link { color: #adadb8; font-size: 12px; text-decoration: none; transition: color 0.2s; }
-    .footer-link:hover { color: #efeff1; }
-    .footer-link.okru:hover { color: #ff5722; }
-    .footer-link.twitch:hover { color: #9147ff; }
-    .footer-info { color: #5a5a66; font-size: 11px; }
-    @media (max-width: 768px) {
-      html, body { overflow: auto; }
-      .stream-page-wrapper { height: auto; min-height: 100vh; }
-      .stream-main { flex-direction: column; }
-      .stream-panel { height: 56.25vw; min-height: 200px; }
-      .chat-panel { width: 100%; height: 50vh; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transmisión Jonpsykez</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #0e0e10;
+            color: #efeff1;
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+        /* Contenedor de la Webcam */
+        .video-container {
+            flex: 3; /* Ocupa el 75% del ancho de la pantalla */
+            background-color: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ajusta la webcam para llenar todo su espacio */
+        }
+        /* Contenedor del Chat de Twitch */
+        .chat-container {
+            flex: 1; /* Ocupa el 25% restante */
+            border-left: 1px solid #2f2f35;
+            background-color: #18181c;
+            height: 100%;
+            min-width: 300px; /* Evita que el chat se vuelva demasiado estrecho */
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
 </head>
 <body>
-<div class="stream-page-wrapper">
 
-  <div class="stream-topbar">
-    <div class="stream-topbar-left">
-      <span class="live-badge">● CINE</span>
-      <span class="stream-channel-name">spreen × cineillojuan</span>
-      <span class="stream-title">🎬 Reproductor de Video</span>
-    </div>
-    <div class="stream-topbar-right">
-      <span class="platform-tag okru-tag">▶ OK.ru</span>
-      <span class="platform-tag twitch-tag">💬 Twitch Chat</span>
-    </div>
-  </div>
-
-  <div class="stream-main">
-
-    <div class="stream-panel">
-      <iframe
-        src="https://ok.ru/videoembed/1192048467658?autoplay=false"
-        allowfullscreen="true"
-        scrolling="no"
-        title="Video en OK.ru"
-      ></iframe>
-      <div class="okru-watermark">🦊 ok.ru/video/1192048467658</div>
+    <!-- Lado Izquierdo: Cámara web en tiempo real -->
+    <div class="video-container">
+        <video id="webcam" autoplay playsinline muted></video>
     </div>
 
-    <div class="stream-divider"></div>
-
-    <div class="chat-panel">
-      <div class="chat-header">
-        <div class="chat-header-title">
-          <span class="twitch-dot"></span>
-          Chat de Twitch
-        </div>
-        <span style="color:#9147ff; font-size:11px; font-weight:600;">cineillojuan</span>
-      </div>
-      <iframe
-        src="https://www.twitch.tv/embed/cineillojuan/chat?darkpopout&parent=jonpsybusiness.github.io"
-        title="Chat de cineillojuan en Twitch"
-      ></iframe>
+    <!-- Lado Derecho: Chat oficial de jonpsykez -->
+    <div class="chat-container">
+        <!-- Configurado con los parámetros obligatorios de seguridad de Twitch para GitHub Pages -->
+        <iframe src="https://twitch.tv" 
+                id="twitch-chat">
+        </iframe>
     </div>
 
-  </div>
+    <script>
+        // Captura el elemento de video del HTML
+        const video = document.getElementById('webcam');
 
-  <div class="stream-footer">
-    <div class="footer-links">
-      <a href="https://ok.ru/video/1192048467658" target="_blank" rel="noopener" class="footer-link okru">🦊 Ver en OK.ru</a>
-      <a href="https://www.twitch.tv/cineillojuan" target="_blank" rel="noopener" class="footer-link twitch">💜 Ver en Twitch</a>
-    </div>
-    <span class="footer-info">spreen × cineillojuan · Video + Chat</span>
-  </div>
-
-</div>
+        // Solicita los permisos de la webcam al usuario que visita la web
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                .then(function(stream) {
+                    video.srcObject = stream;
+                })
+                .catch(function(error) {
+                    console.error("Error al acceder a la webcam: ", error);
+                    alert("Para que funcione la transmisión local, por favor acepta el permiso de la cámara web.");
+                });
+        } else {
+            alert("Este navegador no es compatible con la captura de webcam integrada.");
+        }
+    </script>
 </body>
 </html>
