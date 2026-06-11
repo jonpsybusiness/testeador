@@ -19,7 +19,6 @@
       height: 100vh;
       background: #0e0e10;
     }
-    /* BARRA SUPERIOR */
     .stream-topbar {
       display: flex;
       align-items: center;
@@ -28,192 +27,63 @@
       padding: 10px 16px;
       border-bottom: 1px solid #2a2a2e;
       flex-shrink: 0;
+      flex-wrap: wrap;
+      gap: 6px;
     }
     .stream-topbar-left { display: flex; align-items: center; gap: 10px; }
     .live-badge {
-      background: #53fc18;
-      color: #0e0e10;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 4px;
-      letter-spacing: 0.5px;
+      background: #53fc18; color: #0e0e10; font-size: 11px;
+      font-weight: 700; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.5px;
     }
     .stream-title { color: #efeff1; font-size: 14px; font-weight: 600; }
     .stream-channel-name { color: #53fc18; font-size: 13px; font-weight: 600; }
     .stream-topbar-right { display: flex; align-items: center; gap: 8px; }
     .platform-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: #1f1f23;
-      border: 1px solid #2a2a2e;
-      border-radius: 4px;
-      padding: 4px 8px;
-      font-size: 11px;
-      font-weight: 600;
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #1f1f23; border: 1px solid #2a2a2e;
+      border-radius: 4px; padding: 4px 8px; font-size: 11px; font-weight: 600;
     }
     .kick-tag { color: #53fc18; border-color: #53fc18; }
     .twitch-tag { color: #9147ff; border-color: #9147ff; }
-    /* MAIN */
-    .stream-main {
-      display: flex;
-      flex: 1;
-      min-height: 0;
-    }
-    /* STREAM KICK */
-    .stream-panel {
-      flex: 1;
-      position: relative;
-      background: #000;
-    }
-    .stream-panel iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
-    }
+    .stream-main { display: flex; flex: 1; min-height: 0; }
+    .stream-panel { flex: 1; position: relative; background: #000; }
+    .stream-panel iframe { width: 100%; height: 100%; border: none; display: block; }
     .kick-watermark {
-      position: absolute;
-      bottom: 10px;
-      left: 12px;
-      background: rgba(0,0,0,0.65);
-      border-radius: 4px;
-      padding: 4px 8px;
-      font-size: 11px;
-      color: #53fc18;
-      font-weight: 700;
-      pointer-events: none;
-      z-index: 10;
+      position: absolute; bottom: 10px; left: 12px;
+      background: rgba(0,0,0,0.65); border-radius: 4px; padding: 4px 8px;
+      font-size: 11px; color: #53fc18; font-weight: 700;
+      pointer-events: none; z-index: 10;
     }
-    /* DIVIDER */
     .stream-divider { width: 2px; background: #2a2a2e; flex-shrink: 0; }
-    /* CHAT TWITCH */
     .chat-panel {
-      width: 360px;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      background: #18181b;
+      width: 360px; flex-shrink: 0;
+      display: flex; flex-direction: column; background: #18181b;
     }
     .chat-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      border-bottom: 1px solid #2a2a2e;
-      background: #1f1f23;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; border-bottom: 1px solid #2a2a2e;
+      background: #1f1f23; flex-shrink: 0;
     }
     .chat-header-title {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      color: #efeff1;
-      font-size: 13px;
-      font-weight: 600;
+      display: flex; align-items: center; gap: 7px;
+      color: #efeff1; font-size: 13px; font-weight: 600;
     }
     .twitch-dot {
-      width: 8px;
-      height: 8px;
-      background: #9147ff;
-      border-radius: 50%;
-      animation: pulse-twitch 2s infinite;
+      width: 8px; height: 8px; background: #9147ff;
+      border-radius: 50%; animation: pulse-twitch 2s infinite;
     }
     @keyframes pulse-twitch {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+      0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
     }
-    .chat-panel iframe {
-      flex: 1;
-      width: 100%;
-      border: none;
-      display: block;
-    }
-    /* FOOTER */
+    .chat-panel iframe { flex: 1; width: 100%; border: none; display: block; }
     .stream-footer {
-      background: #18181b;
-      border-top: 1px solid #2a2a2e;
-      padding: 8px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
+      background: #18181b; border-top: 1px solid #2a2a2e;
+      padding: 8px 16px; display: flex;
+      align-items: center; justify-content: space-between; flex-shrink: 0;
     }
     .footer-links { display: flex; gap: 12px; }
-    .footer-link {
-      color: #adadb8;
-      font-size: 12px;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
+    .footer-link { color: #adadb8; font-size: 12px; text-decoration: none; transition: color 0.2s; }
     .footer-link:hover { color: #efeff1; }
     .footer-link.kick:hover { color: #53fc18; }
     .footer-link.twitch:hover { color: #9147ff; }
     .footer-info { color: #5a5a66; font-size: 11px; }
-    /* RESPONSIVE */
-    @media (max-width: 768px) {
-      html, body { overflow: auto; }
-      .stream-page-wrapper { height: auto; min-height: 100vh; }
-      .stream-main { flex-direction: column; }
-      .stream-panel { height: 55vw; min-height: 200px; }
-      .chat-panel { width: 100%; height: 420px; }
-    }
-  </style>
-</head>
-<body>
-<div class="stream-page-wrapper">
-
-  <div class="stream-topbar">
-    <div class="stream-topbar-left">
-      <span class="live-badge">● EN VIVO</span>
-      <span class="stream-channel-name">cineillojuan</span>
-      <span class="stream-title">🎮 Stream en directo</span>
-    </div>
-    <div class="stream-topbar-right">
-      <span class="platform-tag kick-tag">▶ Kick</span>
-      <span class="platform-tag twitch-tag">💬 Twitch Chat</span>
-    </div>
-  </div>
-
-  <div class="stream-main">
-
-    <div class="stream-panel">
-      <iframe
-        src="https://player.kick.com/spreen?autoplay=true&muted=false"
-        allowfullscreen
-        allow="autoplay; fullscreen; picture-in-picture"
-        title="Stream de spreen en Kick"
-      ></iframe>
-      <div class="kick-watermark">⚡ kick.com/spreen</div>
-    </div>
-
-    <div class="stream-divider"></div>
-
-    <div class="chat-panel">
-      <div class="chat-header">
-        <div class="chat-header-title">
-          <span class="twitch-dot"></span>
-          Chat de Twitch
-        </div>
-        <span style="color:#9147ff; font-size:11px; font-weight:600;">cineillojuan</span>
-      </div>
-      <iframe
-        src="https://www.twitch.tv/embed/cineillojuan/chat?darkpopout&parent=jonpsybusiness.github.io"
-        title="Chat de cineillojuan en Twitch"
-      ></iframe>
-    </div>
-
-  </div>
-
-  <div class="stream-footer">
-    <div class="footer-links">
-      <a href="https://kick.com/spreen" target="_blank" rel="noopener" class="footer-link kick">⚡ Ver en Kick</a>
-      <a href="https://www.twitch.tv/cineillojuan" target="_blank" rel="noopener" class="footer-link twitch">💜 Ver en Twitch</a>
-    </div>
-    <span class="footer-info">Stream en vivo · spreen × cineillojuan</span>
-  </div>
-
-</div>
-</body>
-</html>
