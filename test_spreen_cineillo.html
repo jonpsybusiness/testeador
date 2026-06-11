@@ -28,32 +28,62 @@
       border-bottom: 1px solid #2a2a2e;
       flex-shrink: 0;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 12px;
     }
-    .stream-topbar-left { display: flex; align-items: center; gap: 10px; }
+    .stream-topbar-left { display: flex; align-items: center; gap: 10px; flex-grow: 1; }
     .live-badge {
-      background: #ff5722; color: #ffffff; font-size: 11px;
+      background: #e60054; color: #ffffff; font-size: 11px;
       font-weight: 700; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.5px;
     }
-    .stream-title { color: #efeff1; font-size: 14px; font-weight: 600; }
-    .stream-channel-name { color: #ff5722; font-size: 13px; font-weight: 600; }
-    .stream-topbar-right { display: flex; align-items: center; gap: 8px; }
+    
+    /* Buscador dinámico de URL en la barra superior */
+    .url-changer-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #1f1f23;
+      border: 1px solid #2a2a2e;
+      border-radius: 6px;
+      padding: 3px 6px;
+      max-width: 450px;
+      width: 100%;
+    }
+    .url-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #efeff1;
+      font-size: 12px;
+      padding: 4px;
+      outline: none;
+    }
+    .url-input::placeholder { color: #5a5a66; }
+    .url-btn {
+      background: #e60054;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .url-btn:hover { background: #ff1a6c; }
+
+    .stream-topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .platform-tag {
       display: inline-flex; align-items: center; gap: 5px;
       background: #1f1f23; border: 1px solid #2a2a2e;
       border-radius: 4px; padding: 4px 8px; font-size: 11px; font-weight: 600;
     }
-    .okru-tag { color: #ff5722; border-color: #ff5722; }
+    .patreon-tag { color: #e60054; border-color: #e60054; }
     .twitch-tag { color: #9147ff; border-color: #9147ff; }
+    
     .stream-main { display: flex; flex: 1; min-height: 0; }
     .stream-panel { flex: 1; position: relative; background: #000; }
     .stream-panel iframe { width: 100%; height: 100%; border: none; display: block; }
-    .okru-watermark {
-      position: absolute; bottom: 10px; left: 12px;
-      background: rgba(0,0,0,0.65); border-radius: 4px; padding: 4px 8px;
-      font-size: 11px; color: #ff5722; font-weight: 700;
-      pointer-events: none; z-index: 10;
-    }
+    
     .stream-divider { width: 2px; background: #2a2a2e; flex-shrink: 0; }
     .chat-panel {
       width: 360px; flex-shrink: 0;
@@ -84,15 +114,18 @@
     .footer-links { display: flex; gap: 12px; }
     .footer-link { color: #adadb8; font-size: 12px; text-decoration: none; transition: color 0.2s; }
     .footer-link:hover { color: #efeff1; }
-    .footer-link.okru:hover { color: #ff5722; }
+    .footer-link.patreon:hover { color: #e60054; }
     .footer-link.twitch:hover { color: #9147ff; }
     .footer-info { color: #5a5a66; font-size: 11px; }
+    
     @media (max-width: 768px) {
       html, body { overflow: auto; }
       .stream-page-wrapper { height: auto; min-height: 100vh; }
       .stream-main { flex-direction: column; }
       .stream-panel { height: 56.25vw; min-height: 200px; }
       .chat-panel { width: 100%; height: 50vh; }
+      .stream-topbar { flex-direction: column; align-items: stretch; gap: 10px; }
+      .url-changer-container { max-width: 100%; }
     }
   </style>
 </head>
@@ -101,12 +134,22 @@
 
   <div class="stream-topbar">
     <div class="stream-topbar-left">
-      <span class="live-badge">● CINE</span>
-      <span class="stream-channel-name">spreen × cineillojuan</span>
-      <span class="stream-title">🎬 Reproductor de Video</span>
+      <span class="live-badge">● STREAM</span>
+      
+      <div class="url-changer-container">
+        <input 
+          type="text" 
+          id="streamUrlInput" 
+          class="url-input" 
+          placeholder="Pega aquí la nueva URL de Patreon o directo..."
+          value="https://www.patreon.com/JonPsykez/events/160833583"
+        >
+        <button class="url-btn" onclick="updateStreamPlayer()">Cargar</button>
+      </div>
     </div>
+    
     <div class="stream-topbar-right">
-      <span class="platform-tag okru-tag">▶ OK.ru</span>
+      <span class="platform-tag patreon-tag">▶ Directo</span>
       <span class="platform-tag twitch-tag">💬 Twitch Chat</span>
     </div>
   </div>
@@ -115,12 +158,12 @@
 
     <div class="stream-panel">
       <iframe
-        src="https://ok.ru/videoembed/1192048467658?autoplay=false"
+        id="mainStreamPlayer"
+        src="https://www.patreon.com/JonPsykez/events/160833583"
         allowfullscreen="true"
-        scrolling="no"
-        title="Video en OK.ru"
+        allow="autoplay; fullscreen; encrypted-media"
+        title="Reproductor de directo"
       ></iframe>
-      <div class="okru-watermark">🦊 ok.ru/video/1192048467658</div>
     </div>
 
     <div class="stream-divider"></div>
@@ -143,12 +186,42 @@
 
   <div class="stream-footer">
     <div class="footer-links">
-      <a href="https://ok.ru/video/1192048467658" target="_blank" rel="noopener" class="footer-link okru">🦊 Ver en OK.ru</a>
+      <a href="https://www.patreon.com/JonPsykez" id="footerDirectLink" target="_blank" rel="noopener" class="footer-link patreon">❤️ Ir a Patreon</a>
       <a href="https://www.twitch.tv/cineillojuan" target="_blank" rel="noopener" class="footer-link twitch">💜 Ver en Twitch</a>
     </div>
-    <span class="footer-info">spreen × cineillojuan · Video + Chat</span>
+    <span class="footer-info">Multi-plataforma adaptada para móviles</span>
   </div>
 
 </div>
+
+<script>
+  function updateStreamPlayer() {
+    const inputVal = document.getElementById('streamUrlInput').value.trim();
+    const player = document.getElementById('mainStreamPlayer');
+    const footerLink = document.getElementById('footerDirectLink');
+    
+    if (inputVal !== "") {
+      let targetUrl = inputVal;
+      
+      // Si pegas un enlace de evento normal de Patreon, aseguramos que cargue de forma óptima
+      if (targetUrl.includes("patreon.com") && !targetUrl.includes("autoplay=")) {
+        // Opcional: puedes encadenar parámetros si la plataforma lo admite en el futuro
+      }
+      
+      // Actualiza el reproductor en pantalla al instante
+      player.src = targetUrl;
+      
+      // Actualiza también el enlace externo del pie de página por seguridad
+      footerLink.href = targetUrl;
+    }
+  }
+
+  // Permitir que funcione también al pulsar la tecla 'Enter' en el teclado del móvil o PC
+  document.getElementById('streamUrlInput').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+      updateStreamPlayer();
+    }
+  });
+</script>
 </body>
 </html>
