@@ -36,7 +36,6 @@
       font-weight: 700; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.5px;
     }
     
-    /* Buscador dinámico de URL en la barra superior */
     .url-changer-container {
       display: flex;
       align-items: center;
@@ -84,6 +83,28 @@
     .stream-panel { flex: 1; position: relative; background: #000; }
     .stream-panel iframe { width: 100%; height: 100%; border: none; display: block; }
     
+    /* Contenedor alternativo si la plataforma no permite iframe */
+    .fallback-container {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #141416;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+      z-index: 5;
+    }
+    .fallback-title { color: #efeff1; font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .fallback-text { color: #adadb8; font-size: 13px; max-width: 300px; margin-bottom: 20px; }
+    .fallback-btn {
+      background: #e60054; color: white; text-decoration: none;
+      padding: 12px 24px; border-radius: 6px; font-size: 14px; font-weight: 600;
+      transition: background 0.2s; display: inline-block;
+    }
+    .fallback-btn:hover { background: #ff1a6c; }
+
     .stream-divider { width: 2px; background: #2a2a2e; flex-shrink: 0; }
     .chat-panel {
       width: 360px; flex-shrink: 0;
@@ -141,15 +162,15 @@
           type="text" 
           id="streamUrlInput" 
           class="url-input" 
-          placeholder="Pega aquí la nueva URL de Patreon o directo..."
-          value="https://www.patreon.com/JonPsykez/events/160833583"
+          placeholder="Pega la URL del reproductor (Vimeo, OK.ru, etc)..."
+          value=""
         >
         <button class="url-btn" onclick="updateStreamPlayer()">Cargar</button>
       </div>
     </div>
     
     <div class="stream-topbar-right">
-      <span class="platform-tag patreon-tag">▶ Directo</span>
+      <span class="platform-tag patreon-tag">▶ Panel</span>
       <span class="platform-tag twitch-tag">💬 Twitch Chat</span>
     </div>
   </div>
@@ -159,11 +180,17 @@
     <div class="stream-panel">
       <iframe
         id="mainStreamPlayer"
-        src="https://www.patreon.com/JonPsykez/events/160833583"
+        src="about:blank"
         allowfullscreen="true"
         allow="autoplay; fullscreen; encrypted-media"
         title="Reproductor de directo"
       ></iframe>
+
+      <div id="fallbackView" class="fallback-container">
+        <div class="fallback-title">Enlace de Patreon Detectado</div>
+        <div class="fallback-text">Patreon no permite mostrar su web aquí dentro. Usa el botón de abajo para ver el vídeo mientras mantienes el chat abierto.</div>
+        <a href="#" id="fallbackExternalBtn" target="_blank" rel="noopener" class="fallback-btn">Ver vídeo en Patreon</a>
+      </div>
     </div>
 
     <div class="stream-divider"></div>
@@ -186,10 +213,10 @@
 
   <div class="stream-footer">
     <div class="footer-links">
-      <a href="https://www.patreon.com/JonPsykez" id="footerDirectLink" target="_blank" rel="noopener" class="footer-link patreon">❤️ Ir a Patreon</a>
+      <a href="#" id="footerDirectLink" target="_blank" rel="noopener" class="footer-link patreon">❤️ Enlace Externo</a>
       <a href="https://www.twitch.tv/cineillojuan" target="_blank" rel="noopener" class="footer-link twitch">💜 Ver en Twitch</a>
     </div>
-    <span class="footer-info">Multi-plataforma adaptada para móviles</span>
+    <span class="footer-info">Panel inteligente anti-bloqueos</span>
   </div>
 
 </div>
@@ -198,30 +225,46 @@
   function updateStreamPlayer() {
     const inputVal = document.getElementById('streamUrlInput').value.trim();
     const player = document.getElementById('mainStreamPlayer');
+    const fallback = document.getElementById('fallbackView');
+    const fallbackBtn = document.getElementById('fallbackExternalBtn');
     const footerLink = document.getElementById('footerDirectLink');
     
     if (inputVal !== "") {
-      let targetUrl = inputVal;
+      footerLink.href = inputVal;
       
-      // Si pegas un enlace de evento normal de Patreon, aseguramos que cargue de forma óptima
-      if (targetUrl.includes("patreon.com") && !targetUrl.includes("autoplay=")) {
-        // Opcional: puedes encadenar parámetros si la plataforma lo admite en el futuro
+      // CONTROL ANTI-BLOQUEO DE PATREON
+      if (inputVal.includes("patreon.com")) {
+        // Ocultamos el iframe roto y activamos la vista limpia con botón externo
+        player.style.display = "none";
+        fallback.style.display = "flex";
+        fallbackBtn.href = inputVal;
+        
+        // Abre el directo automáticamente en otra pestaña para agilizar en móviles
+        window.open(inputVal, '_blank');
+      } else {
+        // Si es un enlace de reproducción directa (Vimeo, Youtube, OK.ru, Kick...), carga perfecto
+        fallback.style.display = "none";
+        player.style.display = "block";
+        
+        let finalUrl = inputVal;
+        // Corrección rápida automática si pegas un enlace normal de OK.ru en vez de embed
+        if (finalUrl.includes("ok.ru/video/") && !finalUrl.includes("videoembed")) {
+          finalUrl = finalUrl.replace("ok.ru/video/", "ok.ru/videoembed/");
+        }
+        
+        player.src = finalUrl;
       }
-      
-      // Actualiza el reproductor en pantalla al instante
-      player.src = targetUrl;
-      
-      // Actualiza también el enlace externo del pie de página por seguridad
-      footerLink.href = targetUrl;
     }
   }
 
-  // Permitir que funcione también al pulsar la tecla 'Enter' en el teclado del móvil o PC
   document.getElementById('streamUrlInput').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
       updateStreamPlayer();
     }
   });
+  
+  // Mostrar mensaje inicial limpio en el reproductor de vídeo
+  document.getElementById('mainStreamPlayer').src = "about:blank";
 </script>
 </body>
 </html>
