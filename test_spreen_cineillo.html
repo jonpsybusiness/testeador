@@ -1,108 +1,405 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transmisión Jonpsykez (16:9)</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #0e0e10;
-            color: #efeff1;
-            display: flex;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-        }
-        /* Contenedor de la Webcam */
-        .video-container {
-            flex: 3; /* Ocupa el 75% de la pantalla */
-            background-color: #000000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            padding: 10px;
-        }
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; /* Mantiene el ratio 16:9 real sin deformar ni recortar */
-        }
-        /* Contenedor del Chat de Twitch */
-        .chat-container {
-            flex: 1; /* Ocupa el 25% restante */
-            border-left: 1px solid #2f2f35;
-            background-color: #18181c;
-            height: 100%;
-            min-width: 320px;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JonPsykez – Panel Unificado Optimizado</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      background: #0e0e10;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow: hidden;
+    }
+    .stream-page-wrapper {
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100vh;
+      background: #0e0e10;
+    }
+    .stream-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #18181b;
+      padding: 10px 16px;
+      border-bottom: 1px solid #2a2a2e;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .stream-topbar-left { 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      flex-grow: 1; 
+      flex-wrap: wrap;
+    }
+    
+    .url-changer-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #1f1f23;
+      border: 1px solid #2a2a2e;
+      border-radius: 6px;
+      padding: 3px 6px;
+      flex: 1;
+      min-width: 280px;
+      max-width: 400px;
+    }
+    .url-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #efeff1;
+      font-size: 12px;
+      padding: 4px;
+      outline: none;
+    }
+    .url-input::placeholder { color: #5a5a66; }
+    .url-btn {
+      background: #ff5722;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .url-btn:hover { background: #ff7043; }
+    .chat-btn { background: #9147ff; }
+    .chat-btn:hover { background: #a970ff; }
+
+    .stream-topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .platform-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #1f1f23; border: 1px solid #2a2a2e;
+      border-radius: 4px; padding: 4px 8px; font-size: 11px; font-weight: 600;
+    }
+    .okru-tag { color: #ff5722; border-color: #ff5722; }
+    .twitch-tag { color: #9147ff; border-color: #9147ff; }
+    
+    .stream-main { display: flex; flex: 1; min-height: 0; }
+    .stream-panel { flex: 1; position: relative; background: #000; }
+    .stream-panel iframe { width: 100%; height: 100%; border: none; display: none; }
+    
+    .fallback-view {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #141416;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+      z-index: 10;
+    }
+    .fallback-title { color: #efeff1; font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .fallback-text { color: #adadb8; font-size: 13px; max-width: 340px; margin-bottom: 24px; }
+    .fallback-btn {
+      background: #ff5722; color: white; text-decoration: none;
+      padding: 14px 28px; border-radius: 6px; font-size: 14px; font-weight: 600;
+      transition: background 0.2s; display: inline-block;
+      box-shadow: 0 4px 12px rgba(255, 87, 34, 0.2);
+    }
+    .fallback-btn:hover { background: #ff7043; }
+
+    .placeholder-view {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      color: #5a5a66;
+      font-size: 13px;
+      text-align: center;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .stream-divider { width: 2px; background: #2a2a2e; flex-shrink: 0; }
+    .chat-panel {
+      width: 360px; flex-shrink: 0;
+      display: flex; flex-direction: column; background: #18181b;
+    }
+    .chat-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; border-bottom: 1px solid #2a2a2e;
+      background: #1f1f23; flex-shrink: 0;
+    }
+    .chat-header-title {
+      display: flex; align-items: center; gap: 7px;
+      color: #efeff1; font-size: 13px; font-weight: 600;
+    }
+    .chat-dot {
+      width: 8px; height: 8px; background: #adadb8;
+      border-radius: 50%;
+    }
+    .chat-dot.active {
+      background: #9147ff; animation: pulse-chat 2s infinite;
+    }
+    @keyframes pulse-chat {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+    }
+    .chat-panel iframe { flex: 1; width: 100%; border: none; display: none; }
+    .stream-footer {
+      background: #18181b; border-top: 1px solid #2a2a2e;
+      padding: 8px 16px; display: flex;
+      align-items: center; justify-content: space-between; flex-shrink: 0;
+    }
+    .footer-links { display: flex; gap: 12px; }
+    .footer-link { color: #adadb8; font-size: 12px; text-decoration: none; transition: color 0.2s; }
+    .footer-link:hover { color: #efeff1; }
+    .footer-link.okru:hover { color: #ff5722; }
+    .footer-info { color: #5a5a66; font-size: 11px; }
+    
+    @media (max-width: 768px) {
+      html, body { overflow: auto; }
+      .stream-page-wrapper { height: auto; min-height: 100vh; }
+      .stream-main { flex-direction: column; }
+      .stream-panel { height: 56.25vw; min-height: 200px; }
+      .chat-panel { width: 100%; height: 50vh; }
+      .stream-topbar { flex-direction: column; align-items: stretch; gap: 10px; }
+      .url-changer-container { max-width: 100%; }
+    }
+  </style>
 </head>
 <body>
+<div class="stream-page-wrapper">
 
-    <!-- Lado Izquierdo: Cámara web en formato panorámico 16:9 -->
-    <div class="video-container">
-        <video id="webcam" autoplay playsinline muted></video>
+  <div class="stream-topbar">
+    <div class="stream-topbar-left">
+      
+      <div class="url-changer-container">
+        <input 
+          type="text" 
+          id="streamUrlInput" 
+          class="url-input" 
+          placeholder="Pegar enlace del Video o Directo..."
+          value="" 
+        >
+        <button class="url-btn" onclick="updateStreamPlayer()">Cargar Video</button>
+      </div>
+
+      <div class="url-changer-container" style="border-color: #3b3b44;">
+        <input 
+          type="text" 
+          id="chatUrlInput" 
+          class="url-input" 
+          placeholder="Pegar enlace de la sala de Chat..."
+          value="" 
+        >
+        <button class="url-btn chat-btn" onclick="updateChatPlayer()">Cargar Chat</button>
+      </div>
+    </div>
+    
+    <div class="stream-topbar-right">
+      <span class="platform-tag okru-tag" id="videoStatusTag">▶ Sin Video</span>
+      <span class="platform-tag twitch-tag" id="chatStatusTag" style="color: #adadb8; border-color: #2a2a2e;">💬 Sin Chat</span>
+    </div>
+  </div>
+
+  <div class="stream-main">
+
+    <div class="stream-panel">
+      <div id="streamPlaceholder" class="placeholder-view">
+        <p>Introduce una URL valida y haz clic en "Cargar Video".<br>Nota: Algunas plataformas requieren enlaces en formato embebido o reproductor directo.</p>
+      </div>
+
+      <iframe
+        id="mainStreamPlayer"
+        src=""
+        allowfullscreen="true"
+        allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+        title="Reproductor"
+      ></iframe>
+
+      <div id="fallbackPanel" class="fallback-view">
+        <div class="fallback-title">Enlace Externo Detectado (Patreon / Bloqueado)</div>
+        <div class="fallback-text">Para saltar el bloqueo de seguridad impuesto por la plataforma en ventanas internas, haz uso del enlace de acceso directo directo.</div>
+        <a href="#" id="fallbackLinkBtn" target="_blank" rel="noopener" class="fallback-btn">Abrir Origen del Contenido</a>
+      </div>
     </div>
 
-    <!-- Lado Derecho: El Chat se genera de forma segura mediante JavaScript -->
-    <div class="chat-container" id="chat-box"></div>
+    <div class="stream-divider"></div>
 
-    <script>
-        /**************************************************************
-         * 1. CONFIGURACIÓN DEL CHAT DE TWITCH (REPARADO)
-         **************************************************************/
-        // Detecta automáticamente el dominio actual (ej: "tuusuario.github.io" o "localhost")
-        const currentDomain = window.location.hostname;
-        const chatBox = document.getElementById('chat-box');
-        
-        // Creamos el iframe con los permisos de seguridad exigidos por Twitch
-        const iframe = document.createElement('iframe');
-        iframe.src = `https://twitch.tv{currentDomain}&darkpopout`;
-        iframe.id = "twitch-chat";
-        
-        // Insertamos el chat reparado en la página
-        chatBox.appendChild(iframe);
+    <div class="chat-panel">
+      <div class="chat-header">
+        <div class="chat-header-title">
+          <span class="chat-dot" id="chatLiveDot"></span>
+          Panel de Chat
+        </div>
+      </div>
+      
+      <div id="chatPlaceholder" class="placeholder-view">
+        <p>Introduce un enlace para incrustar la caja de chat.<br>Compatible con Twitch, Kick y chats independientes.</p>
+      </div>
 
+      <iframe
+        id="mainChatPlayer"
+        src=""
+        sandbox="allow-scripts allow-same-origin allow-forms"
+        title="Chat"
+      ></iframe>
+    </div>
 
-        /**************************************************************
-         * 2. CONFIGURACIÓN DE LA WEBCAM (FORZADO EN 16:9 / HD)
-         **************************************************************/
-        const video = document.getElementById('webcam');
+  </div>
 
-        const opcionesCamara = {
-            video: {
-                width: { ideal: 1920, min: 1280 },  // Intenta 1080p, si no, baja a 720p
-                height: { ideal: 1080, min: 720 },
-                aspectRatio: { ideal: 1.7777777778 } // Forzar relación de aspecto 16:9
-            },
-            audio: false
-        };
+  <div class="stream-footer">
+    <div class="footer-links">
+      <a href="#" id="footerDirectLink" target="_blank" rel="noopener" class="footer-link okru" style="display:none;">🦊 Enlace Externo del Contenido</a>
+    </div>
+    <span class="footer-info">Panel Unificado · JonPsykez</span>
+  </div>
 
-        // Solicita accesos a la cámara e inicia el reproductor
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia(opcionesCamara)
-                .then(function(stream) {
-                    video.srcObject = stream;
-                })
-                .catch(function(error) {
-                    console.error("Error al configurar la webcam: ", error);
-                    alert("Asegúrate de conceder los permisos de la cámara en tu navegador.");
-                });
-        } else {
-            alert("Tu navegador actual no soporta el acceso a la cámara.");
+</div>
+
+<script>
+  // GESTION DEL REPRODUCTOR DE VIDEO
+  function updateStreamPlayer() {
+    const inputVal = document.getElementById('streamUrlInput').value.trim();
+    const player = document.getElementById('mainStreamPlayer');
+    const fallback = document.getElementById('fallbackPanel');
+    const fallbackBtn = document.getElementById('fallbackLinkBtn');
+    const footerLink = document.getElementById('footerDirectLink');
+    const placeholder = document.getElementById('streamPlaceholder');
+    const statusTag = document.getElementById('videoStatusTag');
+    
+    if (inputVal === "") {
+      player.style.display = "none";
+      player.src = "about:blank";
+      fallback.style.display = "none";
+      placeholder.style.display = "flex";
+      footerLink.style.display = "none";
+      statusTag.innerText = "▶ Sin Video";
+      statusTag.style.color = "#ff5722";
+      statusTag.style.borderColor = "#ff5722";
+      return;
+    }
+
+    placeholder.style.display = "none";
+    footerLink.href = inputVal;
+    footerLink.style.display = "inline-block";
+    statusTag.innerText = "▶ Video Activo";
+    statusTag.style.color = "#4caf50";
+    statusTag.style.borderColor = "#4caf50";
+    
+    // Filtro para enlaces restrictivos (como Patreon)
+    if (inputVal.includes("patreon.com")) {
+      player.style.display = "none";
+      player.src = "about:blank";
+      fallback.style.display = "flex";
+      fallbackBtn.href = inputVal;
+    } else {
+      fallback.style.display = "none";
+      player.style.display = "block";
+      
+      let finalUrl = inputVal;
+      // Convertidor automatico para streams alojados en ok.ru
+      if (finalUrl.includes("ok.ru/video/") && !finalUrl.includes("videoembed")) {
+        finalUrl = finalUrl.replace("ok.ru/video/", "ok.ru/videoembed/");
+      }
+      player.src = finalUrl;
+    }
+  }
+
+  // GESTION DEL PANEL DE CHAT (CON INTERCEPCION CONTRA BLOQUEOS NEGROS)
+  function updateChatPlayer() {
+    const chatInputVal = document.getElementById('chatUrlInput').value.trim();
+    const chatPlayer = document.getElementById('mainChatPlayer');
+    const chatPlaceholder = document.getElementById('chatPlaceholder');
+    const chatDot = document.getElementById('chatLiveDot');
+    const chatStatusTag = document.getElementById('chatStatusTag');
+
+    if (chatInputVal === "") {
+      chatPlayer.style.display = "none";
+      chatPlayer.src = "about:blank";
+      chatPlaceholder.style.display = "flex";
+      chatDot.classList.remove('active');
+      chatStatusTag.innerText = "💬 Sin Chat";
+      chatStatusTag.style.color = "#adadb8";
+      chatStatusTag.style.borderColor = "#2a2a2e";
+      return;
+    }
+
+    chatPlaceholder.style.display = "none";
+    chatPlayer.style.display = "block";
+    chatDot.classList.add('active');
+    chatStatusTag.innerText = "💬 Chat Activo";
+    chatStatusTag.style.color = "#9147ff";
+    chatStatusTag.style.borderColor = "#9147ff";
+
+    let finalChatUrl = chatInputVal;
+    const currentDomain = window.location.hostname || "localhost";
+
+    // FORMATO INTELIGENTE DE CONVERSION - TWITCH
+    if (finalChatUrl.includes("twitch.tv/")) {
+      if (!finalChatUrl.includes("/embed/")) {
+        const urlParts = finalChatUrl.split("twitch.tv/");
+        if (urlParts[1]) {
+          const channelName = urlParts[1].split(/[?#]/)[0].toLowerCase();
+          
+          // Si lo abres desde un archivo local haciendo doble clic (file:///), Twitch bloquea el iframe embed standard.
+          // En esos casos forzamos el uso de la ruta 'popout' limpia, que no se bloquea en negro.
+          if (window.location.protocol === "file:") {
+            finalChatUrl = `https://www.twitch.tv/popout/${channelName}/chat?darkpopout`;
+          } else {
+            finalChatUrl = `https://www.twitch.tv/embed/${channelName}/chat?darkpopout&parent=${currentDomain}`;
+          }
         }
-    </script>
+      }
+    }
+    
+    // FORMATO INTELIGENTE DE CONVERSION - KICK
+    if (finalChatUrl.includes("kick.com/")) {
+      if (!finalChatUrl.includes("/chatroom")) {
+        const kickParts = finalChatUrl.split("kick.com/");
+        if (kickParts[1]) {
+          const kickChannel = kickParts[1].split(/[?#]/)[0];
+          finalChatUrl = `https://kick.com/${kickChannel}/chatroom`;
+        }
+      }
+    }
+
+    chatPlayer.src = finalChatUrl;
+  }
+
+  // DETECTOR DE PARAMETROS URL AL INICIAR
+  window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoParam = urlParams.get('v');
+    const chatParam = urlParams.get('c');
+    
+    if (videoParam) {
+      let customUrl = videoParam;
+      if (!isNaN(customUrl)) {
+        customUrl = "https://ok.ru/videoembed/" + customUrl;
+      }
+      document.getElementById('streamUrlInput').value = customUrl;
+      updateStreamPlayer();
+    }
+    
+    if (chatParam) {
+      document.getElementById('chatUrlInput').value = chatParam;
+      updateChatPlayer();
+    }
+  };
+
+  // Enlazar ejecucion automatica con la tecla Enter
+  document.getElementById('streamUrlInput').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') updateStreamPlayer();
+  });
+
+  document.getElementById('chatUrlInput').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') updateChatPlayer();
+  });
+</script>
 </body>
 </html>
